@@ -1,0 +1,35 @@
+{
+  "name": "ip-architect",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx scripts/seed.ts",
+    "user:reset": "tsx scripts/user-reset.ts",
+    "rename:cities": "tsx scripts/rename-cities.ts",
+    "alerts:send": "tsx scripts/send-alerts.ts",
+    "test": "tsx --test src/lib/ip/cidr.test.ts src/lib/ip/allocate.test.ts src/lib/i18n/i18n.test.ts src/lib/db/ipam.test.ts src/lib/dhcp/config.test.ts src/lib/db/dhcp.test.ts src/lib/vrf/rd.test.ts src/lib/db/vrf.test.ts src/lib/db/edit.test.ts src/lib/db/sites.test.ts src/lib/csv/csv.test.ts src/lib/db/csvio.test.ts src/lib/monitor/ping.test.ts src/lib/db/monitoring.test.ts src/lib/db/reports.test.ts src/lib/plan/blocks.test.ts src/lib/db/planning.test.ts src/lib/auth/auth.test.ts src/lib/db/audit.test.ts src/lib/ai/ai.test.ts src/lib/db/notifications.test.ts src/lib/mail/smtp.test.ts src/lib/db/signup.test.ts src/lib/docs/docs.test.ts src/lib/tp/grade.test.ts src/lib/db/passwordreset.test.ts src/lib/db/access.test.ts src/lib/db/alerts.test.ts src/lib/db/tp.test.ts src/lib/db/tpclasses.test.ts src/lib/db/meta.test.ts src/lib/db/webhooks.test.ts src/lib/db/bulk.test.ts src/lib/ip/tree.test.ts src/lib/db/tokens.test.ts src/lib/db/changes.test.ts src/lib/ldap/ldap.test.ts src/lib/db/sso.test.ts src/lib/db/scans.test.ts src/lib/snmp/snmp.test.ts src/lib/topology/discover.test.ts src/lib/topology/layout.test.ts src/lib/db/topology.test.ts src/lib/auth/hardening.test.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.5.0",
+    "lucide-react": "^0.460.0",
+    "next": "14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.13.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

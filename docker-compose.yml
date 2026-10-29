@@ -1,0 +1,13 @@
+# Démarrage : docker compose up -d --build   puis   http://localhost:3000
+# Les données (base SQLite) vivent dans le volume « ipa-data » : elles survivent aux mises à jour de l'image.
+services:
+  ip-architect:
+    build: .
+    image: ip-architect
+    ports:
+      - "3000:3000"
+    volumes:
+      - ipa-data:/data
+    restart: unless-stopped
+volumes:
+  ipa-data:

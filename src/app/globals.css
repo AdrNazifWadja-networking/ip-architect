@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Palette : triplets RGB, thème clair par défaut, thème sombre via .dark */
+/* ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --bg: 244 246 251;
+  --panel: 255 255 255;
+  --panel2: 241 244 250;
+  --line: 226 232 240;
+  --fg: 15 23 42;
+  --fg2: 51 65 85;
+  --muted: 100 116 139;
+  --neutral: 148 163 184;
+  --brand: 124 58 237;
+  --brand-soft: 109 40 217;
+  --ipv4: 124 58 237;
+  --ipv6: 37 99 235;
+  --ok: 22 163 74;
+  --warn: 217 119 6;
+  --bad: 220 38 38;
+  --scroll: 203 213 225;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: 7 11 23;
+  --panel: 12 18 36;
+  --panel2: 16 24 48;
+  --line: 27 36 64;
+  --fg: 255 255 255;
+  --fg2: 203 213 225;
+  --muted: 138 148 176;
+  --neutral: 71 85 105;
+  --brand: 124 58 237;
+  --brand-soft: 167 139 250;
+  --ipv4: 139 92 246;
+  --ipv6: 59 130 246;
+  --ok: 34 197 94;
+  --warn: 245 158 11;
+  --bad: 239 68 68;
+  --scroll: 38 50 90;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-bg font-sans text-fg2 antialiased;
+}
+
+/* Barres de défilement discrètes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--scroll)) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--scroll));
+  border-radius: 8px;
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-line bg-panel;
+  }
+  .card-title {
+    @apply text-[13px] font-semibold uppercase tracking-wide text-fg;
+  }
+  .label-caps {
+    @apply text-[10.5px] font-medium uppercase tracking-wider text-muted;
+  }
+  .input {
+    @apply h-9 w-full rounded-md border border-line bg-panel2 px-3 text-sm text-fg placeholder:text-muted/70 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand;
+  }
+  .btn {
+    @apply inline-flex h-9 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-violet-600;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-panel text-fg2 hover:bg-panel2;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Impression (rapports) : on ne garde que le contenu, toujours en thème clair */
+/* ------------------------------------------------------------------ */
+@media print {
+  aside,
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  .h-screen {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  :root,
+  .dark {
+    color-scheme: light;
+    --bg: 255 255 255;
+    --panel: 255 255 255;
+    --panel2: 241 244 250;
+    --line: 203 213 225;
+    --fg: 15 23 42;
+    --fg2: 51 65 85;
+    --muted: 71 85 105;
+  }
+  body {
+    background: #fff;
+  }
+  .card {
+    break-inside: avoid;
+  }
+  table {
+    break-inside: auto;
+  }
+  tr {
+    break-inside: avoid;
+  }
+}
