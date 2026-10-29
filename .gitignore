@@ -1,6 +1,13 @@
 node_modules
 .next
 next-env.d.ts
-data/*.db
-data/*.db-*
-.env*.local
+tsconfig.tsbuildinfo
+# Données : ne JAMAIS publier une base (comptes, secrets, adresses)
+data/
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+*.zip
+.DS_Store

@@ -1,0 +1,14 @@
+# Exemple Apache (alternative à Nginx). Modules : a2enmod proxy proxy_http headers
+# Copier vers /etc/apache2/sites-available/ip-architect.conf, adapter le nom, puis : a2ensite ip-architect && systemctl reload apache2
+# Lancez deploy/install.sh avec --no-web si Apache sert déjà le port 80.
+<VirtualHost *:80>
+    ServerName ipam.exemple.org
+
+    LimitRequestBody 13631488
+    ProxyPreserveHost On
+    ProxyPass        / http://127.0.0.1:3000/ timeout=120
+    ProxyPassReverse / http://127.0.0.1:3000/
+    RequestHeader unset X-Forwarded-For
+    RequestHeader set X-Forwarded-Proto "http"
+    # Apache ajoute lui-même X-Forwarded-For avec l'adresse réelle du client (mod_proxy)
+</VirtualHost>

@@ -4,6 +4,10 @@ data
 *.db
 *.db-*
 .git
-Dockerfile
-docker-compose.yml
+.github
+.env
+.env.*
+!.env.example
 *.zip
+deploy
+docs

@@ -1,0 +1,26 @@
+[Unit]
+Description=IP Architect (IPAM)
+After=network.target
+
+[Service]
+Type=simple
+User=@APP_USER@
+Group=@APP_USER@
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONF_DIR@/env
+ExecStart=/usr/bin/env npm start -- -H 127.0.0.1 -p ${PORT}
+Restart=on-failure
+RestartSec=3
+
+# Durcissement : le service ne peut écrire que dans ses données et son cache
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=@DATA_DIR@ @APP_DIR@/.next
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target
