@@ -344,6 +344,9 @@ export function startDiscovery(raw: unknown, db: Db = getDb(), deps: TopoDeps = 
 
 /* ------------------------------ Découverte d'un réseau de l'IPAM ------------------------------ */
 
+/** Au-delà de ce nombre d'hôtes portant la même MAC, elle est considérée comme partagée (passerelle, proxy ARP). */
+const SHARED_MAC_MAX = 2;
+
 const guessKind = (h: ScanHost, gateway: string | null): TopoKind => {
   if (gateway && h.address === gateway) return "router";
   if (h.via.includes("tcp:53")) return "server";
@@ -379,22 +382,28 @@ export function applyScanHosts(db: Db, projectId: number, net: { cidr: string; n
       links++;
     };
     const attached = new Set<number>();
+    // Une MAC partagée par plusieurs hôtes n'est pas la leur : c'est celle de la passerelle ou d'un proxy ARP (le serveur n'est pas
+    // sur ce réseau). On ne s'en sert ni pour les rattacher à un port de switch, ni pour les décrire.
+    const macCount = new Map<string, number>();
+    for (const h of hosts) if (h.mac) macCount.set(h.mac, (macCount.get(h.mac) ?? 0) + 1);
+    const ownMac = (h: ScanHost): string | null => (h.mac && (macCount.get(h.mac) ?? 0) <= SHARED_MAC_MAX ? h.mac : null);
     for (const h of hosts) {
       let dev = all().find((d) => d.address === h.address);
       if (!dev) {
         if (total >= TOPO_DEVICES_MAX) continue;
         const name = (h.hostname ?? h.address).slice(0, 80);
-        const info = h.mac ? `MAC ${h.mac}` : null;
+        const info = ownMac(h) ? `MAC ${ownMac(h)}` : null;
         const id = Number(db.prepare("INSERT INTO topo_devices (project_id, name, address, kind, info, source, last_seen_at) VALUES (?, ?, ?, ?, ?, 'scan', ?)").run(projectId, name, h.address, guessKind(h, net.gateway), info, at).lastInsertRowid);
         dev = { id, name, address: h.address, kind: guessKind(h, net.gateway), source: "scan" };
         total++;
         devices++;
       } else db.prepare("UPDATE topo_devices SET last_seen_at = ? WHERE id = ?").run(at, dev.id);
       // vu par un switch (table MAC) : branché sur son port
-      const seen = h.mac ? (db.prepare("SELECT device_id, port FROM topo_clients c JOIN topo_devices d ON d.id = c.device_id WHERE d.project_id = ? AND c.mac = ?").get(projectId, h.mac) as { device_id: number; port: string | null } | undefined) : undefined;
+      const mac = ownMac(h);
+      const seen = mac ? (db.prepare("SELECT device_id, port FROM topo_clients c JOIN topo_devices d ON d.id = c.device_id WHERE d.project_id = ? AND c.mac = ?").get(projectId, mac) as { device_id: number; port: string | null } | undefined) : undefined;
       if (seen && seen.device_id !== dev.id) {
         linkOnce(dev.id, null, seen.device_id, seen.port);
-        db.prepare("DELETE FROM topo_clients WHERE device_id = ? AND mac = ?").run(seen.device_id, h.mac);
+        db.prepare("DELETE FROM topo_clients WHERE device_id = ? AND mac = ?").run(seen.device_id, mac);
         attached.add(dev.id);
       }
     }

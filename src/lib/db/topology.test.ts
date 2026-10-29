@@ -4,12 +4,12 @@ import Database from "better-sqlite3";
 import { SCHEMA, type Db } from "./index";
 import { seedDatabase } from "./seed";
 import {
-  applyCrawl, cancelDiscovery, createCredential, createDevice, createLink, deleteCredential, deleteDevice, deleteLink, discoveryStatus, getTopology, listClients,
+  applyCrawl, applyScanHosts, cancelDiscovery, createCredential, createDevice, createLink, deleteCredential, deleteDevice, deleteLink, discoveryStatus, getTopology, listClients,
   listCredentials, setPositions, startDiscovery, topoAddressRefused, updateCredential, updateDevice,
 } from "./topology";
 import { MibStore, mac, num, str } from "../snmp/fakeAgent";
 import type { SnmpLike } from "../snmp/client";
-import { createNetwork } from "./queries";
+import { createNetwork, getActiveProject } from "./queries";
 import { ApiError } from "../types";
 
 function freshDb(): Db {
@@ -211,4 +211,27 @@ test("découverte d'un réseau sans identifiants SNMP : seulement les hôtes, re
   const t = getTopology(db);
   assert.deepEqual(t.devices.map((d) => d.kind).sort(), ["network", "other"]);
   assert.equal(t.links.length, 1);
+});
+
+test("hôtes d'un scan : une MAC partagée (passerelle, proxy ARP) ne rattache personne à un port et n'est pas affichée", () => {
+  const db = freshDb();
+  const p = getActiveProject(db);
+  const sw = Number(db.prepare("INSERT INTO topo_devices (project_id, name, kind, source, last_seen_at) VALUES (?, 'sw', 'switch', 'manual', ?)").run(p.id, new Date().toISOString()).lastInsertRowid);
+  const SHARED = "48:a9:8a:db:0e:24";
+  db.prepare("INSERT INTO topo_clients (device_id, mac, port, ip, vlan, last_seen_at) VALUES (?, ?, 'Gi1', NULL, NULL, ?)").run(sw, SHARED, new Date().toISOString());
+  db.prepare("INSERT INTO topo_clients (device_id, mac, port, ip, vlan, last_seen_at) VALUES (?, ?, 'Gi2', NULL, NULL, ?)").run(sw, "bb:00:00:00:00:01", new Date().toISOString());
+  const host = (n: number, mac: string | null) => ({ address: `10.9.9.${n}`, ms: 1, via: ["icmp"], hostname: null, mac });
+  const hosts = [host(1, SHARED), host(2, SHARED), host(3, SHARED), host(4, SHARED), host(5, "bb:00:00:00:00:01")];
+  applyScanHosts(db, p.id, { cidr: "10.9.9.0/24", name: "Test", gateway: "10.9.9.1" }, hosts);
+  const t = getTopology(db);
+  const dev = (a: string) => t.devices.find((d) => d.address === a)!;
+  const cloud = t.devices.find((d) => d.kind === "network")!;
+  const linked = (x: number, y: number) => t.links.some((l) => (l.aDevice === x && l.bDevice === y) || (l.aDevice === y && l.bDevice === x));
+  for (const n of [2, 3, 4]) {
+    assert.ok(!linked(dev(`10.9.9.${n}`).id, sw), `10.9.9.${n} : pas rattaché au switch par une MAC partagée`);
+    assert.ok(linked(dev(`10.9.9.${n}`).id, cloud.id), `10.9.9.${n} : relié au nuage`);
+    assert.ok(!(dev(`10.9.9.${n}`).info ?? "").includes("MAC"), "MAC partagée non affichée");
+  }
+  assert.ok(linked(dev("10.9.9.5").id, sw), "une MAC qui n'appartient qu'à un hôte rattache bien au port du switch");
+  assert.ok((dev("10.9.9.5").info ?? "").includes("bb:00:00:00:00:01"));
 });

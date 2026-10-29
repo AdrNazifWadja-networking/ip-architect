@@ -12,6 +12,8 @@ export const NODE_H = 64;
 const GAP_X = 40;
 const GAP_Y = 90;
 const GAP_COMP = 120;
+/** Au-delà, une rangée est repliée sur plusieurs lignes (25 hôtes sur un même switch ne font pas un schéma de 5 000 px de large). */
+export const MAX_ROW = 8;
 
 export interface Layout {
   pos: Map<number, { x: number; y: number }>;
@@ -75,9 +77,16 @@ export function layoutTopology(nodes: LNode[], links: LLink[]): Layout {
         rows[li].forEach((id, i) => order.set(id, i));
       }
     }
-    const widest = Math.max(...rows.map((r) => r.length));
+    // une rangée trop large est repliée en lignes équilibrées (25 hôtes -> 4 lignes de 7, 7, 7 et 4)
+    const visual: number[][] = [];
+    for (const r of rows) {
+      const lines = Math.max(1, Math.ceil(r.length / MAX_ROW));
+      const per = Math.ceil(r.length / lines);
+      for (let i = 0; i < r.length; i += per) visual.push(r.slice(i, i + per));
+    }
+    const widest = Math.max(...visual.map((r) => r.length));
     const compW = widest * NODE_W + (widest - 1) * GAP_X;
-    rows.forEach((r, li) => {
+    visual.forEach((r, li) => {
       const rowW = r.length * NODE_W + (r.length - 1) * GAP_X;
       const start = offsetX + (compW - rowW) / 2;
       r.forEach((id, i) => pos.set(id, { x: start + i * (NODE_W + GAP_X), y: li * (NODE_H + GAP_Y) }));

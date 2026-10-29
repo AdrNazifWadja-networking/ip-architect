@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bounds, layoutTopology, NODE_H, NODE_W, type LNode } from "./layout";
+import { bounds, layoutTopology, MAX_ROW, NODE_H, NODE_W, type LNode } from "./layout";
 
 const n = (id: number, kind: LNode["kind"], x: number | null = null, y: number | null = null): LNode => ({ id, kind, x, y });
 
@@ -45,4 +45,24 @@ test("positions manuelles prioritaires ; cadrage ; graphe vide", () => {
   assert.ok(b.x < 500 && b.x + b.w > 500 + NODE_W);
   assert.deepEqual(layoutTopology([], []).pos.size, 0);
   assert.equal(bounds(new Map()).w, 600);
+});
+
+test("une rangée trop large est repliée en lignes équilibrées, sans superposition et centrée sous son parent", () => {
+  const nodes = [n(1, "network"), ...Array.from({ length: 25 }, (_, i) => n(i + 2, "other"))];
+  const links = Array.from({ length: 25 }, (_, i) => ({ aDevice: 1, bDevice: i + 2 }));
+  const l = layoutTopology(nodes, links);
+  const ys = [...new Set(nodes.slice(1).map((d) => l.pos.get(d.id)!.y))].sort((a, b) => a - b);
+  assert.equal(ys.length, 4, "25 hôtes -> 4 lignes");
+  const perLine = ys.map((y) => nodes.slice(1).filter((d) => l.pos.get(d.id)!.y === y).length);
+  assert.deepEqual(perLine, [7, 7, 7, 4]);
+  assert.ok(Math.max(...perLine) <= MAX_ROW);
+  assert.ok(l.width <= MAX_ROW * (NODE_W + 40), "schéma beaucoup moins large qu'une seule rangée");
+  const ps = [...l.pos.values()];
+  for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) assert.ok(!(Math.abs(ps[i].x - ps[j].x) < NODE_W && Math.abs(ps[i].y - ps[j].y) < NODE_H), `superposition ${i}/${j}`);
+  // le parent est centré au-dessus de la plus large des lignes
+  const first = nodes.slice(1).filter((d) => l.pos.get(d.id)!.y === ys[0]).map((d) => l.pos.get(d.id)!.x);
+  assert.equal(l.pos.get(1)!.x, (Math.min(...first) + Math.max(...first)) / 2);
+  // 8 hôtes ou moins : une seule ligne, comme avant
+  const small = layoutTopology(nodes.slice(0, 9), links.slice(0, 8));
+  assert.equal(new Set(nodes.slice(1, 9).map((d) => small.pos.get(d.id)!.y)).size, 1);
 });

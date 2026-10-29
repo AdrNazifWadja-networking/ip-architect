@@ -66,9 +66,11 @@ export function TopologyView({ initial, networks, canEdit, isAdmin }: { initial:
   const deviceName = (id: number): string => data.devices.find((d) => d.id === id)?.name ?? String(id);
 
   const fit = useCallback(() => setView(bounds(layout.pos)), [layout]);
-  // cadrage initial et après chaque changement du nombre d'équipements
+  // Tant que l'utilisateur n'a ni zoomé ni déplacé la vue, on recadre dès que le schéma change (nombre d'équipements ou taille).
+  const touched = useRef(false);
   const count = data.devices.length;
-  useEffect(() => { fit(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [count]);
+  useEffect(() => { if (!touched.current) fit(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [count, layout.width, layout.height]);
+  const refit = () => { touched.current = false; fit(); };
 
   useEffect(() => {
     if (!canEdit) return;
@@ -120,12 +122,17 @@ export function TopologyView({ initial, networks, canEdit, isAdmin }: { initial:
   };
   const onWheel = (e: React.WheelEvent) => {
     if (!view) return;
+    touched.current = true;
     const k = e.deltaY < 0 ? 0.88 : 1 / 0.88;
     const p = toSvg(e.clientX, e.clientY);
     const w = Math.min(Math.max(view.w * k, 200), 40000), h = view.h * (w / view.w);
     setView({ x: p.x - ((p.x - view.x) / view.w) * w, y: p.y - ((p.y - view.y) / view.h) * h, w, h });
   };
-  const zoom = (k: number) => view && setView({ x: view.x + (view.w * (1 - k)) / 2, y: view.y + (view.h * (1 - k)) / 2, w: view.w * k, h: view.h * k });
+  const zoom = (k: number) => {
+    if (!view) return;
+    touched.current = true;
+    setView({ x: view.x + (view.w * (1 - k)) / 2, y: view.y + (view.h * (1 - k)) / 2, w: view.w * k, h: view.h * k });
+  };
   const onDown = (e: React.PointerEvent, id?: number) => {
     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
     e.stopPropagation();
@@ -137,6 +144,7 @@ export function TopologyView({ initial, networks, canEdit, isAdmin }: { initial:
     const g = pointer.current;
     if (!g || !view) return;
     if (g.kind === "pan") {
+      touched.current = true;
       const el = svgRef.current!;
       const sc = view.w / el.clientWidth;
       setView({ ...view, x: g.origX - (e.clientX - g.startX) * sc, y: g.origY - (e.clientY - g.startY) * sc });
@@ -146,6 +154,7 @@ export function TopologyView({ initial, networks, canEdit, isAdmin }: { initial:
     if (!g.moved && Math.hypot(p.x - g.startX, p.y - g.startY) < 4) return;
     if (!canEdit || linkMode) return;
     g.moved = true;
+    touched.current = true; // on déplace un équipement : plus de recadrage automatique
     setDrag({ id: g.id!, x: g.origX + p.x - g.startX, y: g.origY + p.y - g.startY });
   };
   const onUp = () => {
@@ -306,7 +315,7 @@ export function TopologyView({ initial, networks, canEdit, isAdmin }: { initial:
           <input className="input w-52" placeholder={s.toolbar.filter} aria-label={s.toolbar.filter} value={query} onChange={(e) => setQuery(e.target.value)} />
           <button className="btn-secondary" onClick={() => zoom(0.8)} aria-label={s.toolbar.zoomIn}>+</button>
           <button className="btn-secondary" onClick={() => zoom(1.25)} aria-label={s.toolbar.zoomOut}>−</button>
-          <button className="btn-secondary" onClick={fit}>{s.toolbar.fit}</button>
+          <button className="btn-secondary" onClick={refit}>{s.toolbar.fit}</button>
           {canEdit && (
             <>
               <button className="btn-secondary" onClick={() => setAddOpen((v) => !v)}>{s.toolbar.addDevice}</button>
