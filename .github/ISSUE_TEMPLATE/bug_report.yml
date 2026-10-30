@@ -1,0 +1,39 @@
+name: Bug / Signaler un problème
+description: Quelque chose ne marche pas comme prévu
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Merci ! **Ne collez jamais** de mot de passe, de communauté SNMP, de jeton ou de code d'installation."
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce qui se passe
+      description: Que faisiez-vous, que voyez-vous, que vouliez-vous voir ?
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pour reproduire
+      placeholder: "1. Aller sur Réseaux\n2. Cliquer sur…"
+  - type: input
+    id: version
+    attributes:
+      label: Version d'IP Architect
+      placeholder: "1.0.0 (ou hash du commit)"
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation
+      options: [Script Debian/Ubuntu, Docker, Manuelle (npm), Autre]
+  - type: textarea
+    id: env
+    attributes:
+      label: Système et navigateur
+      placeholder: "Ubuntu 26.04, Node 22, Chrome 130…"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Journaux (sans secrets)
+      description: "`journalctl -u ip-architect -n 50` ou la console du navigateur"
+      render: shell

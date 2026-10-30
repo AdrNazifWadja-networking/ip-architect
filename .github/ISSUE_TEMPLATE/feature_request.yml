@@ -1,0 +1,14 @@
+name: Idée / Demande de fonctionnalité
+description: Proposer une amélioration
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Le besoin
+      description: Quel problème voulez-vous résoudre ? (votre contexte : PME, fournisseur d'accès, enseignement…)
+    validations: { required: true }
+  - type: textarea
+    id: idea
+    attributes:
+      label: Comment imaginez-vous la solution ?

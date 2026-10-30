@@ -1,0 +1,29 @@
+name: Test sur du vrai matériel
+description: Résultat d'une découverte SNMP / LLDP / scan sur votre réseau
+labels: ["hardware-test"]
+body:
+  - type: markdown
+    attributes:
+      value: "Merci de tester ! Ne publiez **ni communauté SNMP, ni adresses publiques**. Vous pouvez remplacer vos adresses par 10.x.x.x."
+  - type: input
+    id: gear
+    attributes:
+      label: Matériel testé
+      placeholder: "Ubiquiti USW-24, MikroTik CRS326, Cisco SG350, HP 2530…"
+    validations: { required: true }
+  - type: dropdown
+    id: feature
+    attributes:
+      label: Fonction testée
+      options: [Topologie SNMP (LLDP/CDP), Scan réseau, Supervision, Autre]
+  - type: dropdown
+    id: result
+    attributes:
+      label: Résultat
+      options: [Fonctionne comme prévu, Fonctionne en partie, Ne fonctionne pas]
+    validations: { required: true }
+  - type: textarea
+    id: details
+    attributes:
+      label: Détails
+      description: Équipements trouvés / manquants, liens corrects ou faux, messages d'erreur…

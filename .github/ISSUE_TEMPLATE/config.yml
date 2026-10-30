@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Signaler une faille de sécurité / Report a vulnerability
+    url: https://github.com/AdrNazifWadja-networking/ip-architect/security/advisories/new
+    about: Ne publiez pas les failles dans une issue publique (voir SECURITY.md).
