@@ -22,7 +22,7 @@
 
 | Méthode | Commande |
 |---|---|
-| **Serveur Debian / Ubuntu** | `git clone https://github.com/AdrNazifWadja-networking/ip-architect.git && cd ip-architect && sudo ./deploy/install.sh` |
+| **Serveur Debian / Ubuntu** | `git clone https://github.com/AdrNazifWadja-networking/ip-architect.git && cd ip-architect && sudo bash ./deploy/install.sh` |
 | **Docker** | `docker compose up -d --build` puis http://localhost:3000 |
 | **Développement** | `npm install && npm run dev` (Node.js 22) |
 
@@ -61,7 +61,7 @@ Copyright © 2026 AdrNazifWadja.
 
 **IP Architect** is a self-hosted IP address management (IPAM) web app: IPv4/IPv6 subnets with overlap detection, addresses, VLANs, VRFs, sites, DHCP scopes, tags and custom fields, network scanning, monitoring with e-mail alerts, automatic SNMP topology (LLDP/CDP), a teaching mode with auto-graded subnetting exercises, accounts and roles, OpenID Connect SSO, LDAP, API tokens, webhooks and a before/after audit log. The interface is available in French and English, in light and dark themes.
 
-**Install**: on Debian/Ubuntu, `sudo ./deploy/install.sh` (Node.js, systemd, Nginx, optional Let's Encrypt); or `docker compose up -d --build`; or `npm install && npm run dev` for development (Node.js 22). SQLite is the only storage, so there is no database server to set up. See [docs/INSTALL.md](docs/INSTALL.md) (in French).
+**Install**: on Debian/Ubuntu, `sudo bash ./deploy/install.sh` (Node.js, systemd, Nginx, optional Let's Encrypt); or `docker compose up -d --build`; or `npm install && npm run dev` for development (Node.js 22). SQLite is the only storage, so there is no database server to set up. See [docs/INSTALL.md](docs/INSTALL.md) (in French).
 
 **Demo data**: a first start loads a demo project; the *Start with my own data* button removes it and creates your first project.
 
