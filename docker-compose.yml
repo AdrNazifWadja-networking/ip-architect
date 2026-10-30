@@ -9,5 +9,7 @@ services:
     volumes:
       - ipa-data:/data
     restart: unless-stopped
+    # Scan réseau et topologie : en réseau « bridge » (défaut), le conteneur ne voit pas les adresses MAC de votre réseau local.
+    # Pour un scan complet, remplacez « ports » par :  network_mode: host   (Linux uniquement)
 volumes:
   ipa-data:
