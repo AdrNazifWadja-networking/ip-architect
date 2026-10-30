@@ -4,7 +4,7 @@
 *Modern IPAM for small businesses, ISPs and teachers — French and English, light and dark.*
 
 [![CI](https://github.com/AdrNazifWadja-networking/ip-architect/actions/workflows/ci.yml/badge.svg)](https://github.com/AdrNazifWadja-networking/ip-architect/actions/workflows/ci.yml)
-[![Licence MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![Licence AGPL-3.0](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](LICENSE)
 
 ![Tableau de bord](docs/screenshots/dashboard.png)
 
@@ -49,7 +49,11 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · SQLite (`be
 
 ## Licence
 
-[MIT](LICENSE).
+IP Architect est publié sous licence **[GNU AGPL v3](LICENSE)** (AGPL-3.0-only) : vous pouvez l'utiliser, l'étudier, le modifier et le redistribuer librement. Si vous modifiez le programme et que vous le proposez à des utilisateurs à travers un réseau (service hébergé), vous devez leur donner accès au code source de votre version, sous la même licence. L'installer pour votre propre organisation, sans le modifier ou sans l'offrir à des tiers, n'impose aucune obligation.
+
+Pour un autre cadre d'utilisation (intégration dans un produit fermé, hébergement commercial), contactez l'auteur via GitHub.
+
+Copyright © 2026 AdrNazifWadja.
 
 ---
 
@@ -61,4 +65,4 @@ Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · SQLite (`be
 
 **Demo data**: a first start loads a demo project; the *Start with my own data* button removes it and creates your first project.
 
-**Known limits**: stored secrets are not yet encrypted at rest; SNMP, scanning and SSO have been tested against simulations only. Licensed under MIT.
+**Known limits**: stored secrets are not yet encrypted at rest; SNMP, scanning and SSO have been tested against simulations only. Licensed under the GNU AGPL v3: you may use and modify it freely, but if you offer a modified version to users over a network you must provide them its source code under the same licence. For other terms (closed-source integration, commercial hosting), contact the author on GitHub.

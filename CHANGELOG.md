@@ -10,3 +10,4 @@
 - Français / anglais, thème clair / sombre.
 - Next.js 15 / React 19, durcissement de sécurité (code d'installation, proxy de confiance, limites de taille, en-têtes).
 - Installation serveur (Debian/Ubuntu : script, systemd, Nginx) et image Docker.
+- Licence : GNU AGPL v3 (les premiers commits publics, avant cette version, avaient été publiés sous licence MIT).

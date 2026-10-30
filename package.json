@@ -32,7 +32,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdrNazifWadja-networking/ip-architect.git"
